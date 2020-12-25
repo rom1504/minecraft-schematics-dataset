@@ -1,9 +1,9 @@
 const tfrecord = require('tfrecord')
-const metadata = require('../data/schematicsWithFinalUrl.json')
+const metadata = require(__dirname+'/../data/schematicsWithFinalUrl.json')
 const indexedMetadata = Object.fromEntries(metadata.map(e => [e.url, e]))
 
 async function* read () {
-  const reader = await tfrecord.createReader('../data/schematics_0.tfrecords')
+  const reader = await tfrecord.createReader(__dirname+'/../data/schematics_0.tfrecords')
   let example
   const enc = new TextDecoder()
   while (example = await reader.readExample()) { // eslint-disable-line
