@@ -26,7 +26,6 @@ async function main() {
 
         const b = performance.now()
 
-        console.log(schematic.title)
 
         const data = schematic.schematicData
 
@@ -39,7 +38,10 @@ async function main() {
             // const parsedNbt = nbt.simplify(await parseNbt(uncompressed))
             const schem = await Schematic.read(uncompressed)
         } catch(err) {
+            const id = schematic.url.split("/")[schematic.url.split("/").length-2]
+            console.log(id)
             console.log(err)
+            await fs.writeFile("schem/"+id+".schematic", data)
         }
         console.log(performance.now() - b)
         //console.log(parsedNbt)
