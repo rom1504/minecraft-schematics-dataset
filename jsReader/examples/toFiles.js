@@ -21,6 +21,7 @@ const hasGzipHeader = function (data) {
 async function main() {
     let i = 0
     const begin = performance.now()
+    const names = []
     for await (const schematic of read()) {
         //console.log(schematic)
 
@@ -40,7 +41,10 @@ async function main() {
 
             const id = schematic.url.split("/")[schematic.url.split("/").length-2]
             console.log(id)
-            await fs.writeFile("viewer/public/schem/"+id+".schematic", data)
+            if (schem.size.x < 30 && schem.size.z < 30) {
+                await fs.writeFile("viewer/public/schem/"+id+".schematic", data)
+                names.push("schem/"+id+".schematic")
+            }
         } catch(err) {
             console.log('failed', err)
         }
@@ -48,10 +52,11 @@ async function main() {
         //console.log(parsedNbt)
 
         i++
-        if (i==100) {
+        if (i==1000) {
             break
         }
     }
+    await fs.writeFile('viewer/public/names.json', JSON.stringify(names, null, 2))
 
     console.log(performance.now() - begin)
 }
