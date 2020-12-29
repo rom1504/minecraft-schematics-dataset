@@ -5,12 +5,13 @@ global.THREE = require('three')
 require('three/examples/js/controls/OrbitControls')
 
 const { Schematic } = require('prismarine-schematic')
+const names = require('./public/names.json')
 
 
 async function main (){
 
   const version = '1.16.4'
-  const viewDistance = 6
+  const viewDistance = 8
   const center = new Vec3(0, 90, 0)
 
   const World = require('prismarine-world')(version)
@@ -35,10 +36,38 @@ async function main (){
   const world = new World(chunkGenerator)
   const worldView = new WorldView(world, viewDistance, center)
 
-  const data = await fetch('schem/argenau.schematic').then(r => r.arrayBuffer())
-  const schem = await Schematic.read(Buffer.from(data), version)
-  console.log(schem)
-  await schem.paste(world, new Vec3(0, 60, 0))
+  function getRandomSubarray(arr, size) {
+        var shuffled = arr.slice(0), i = arr.length, temp, index;
+        while (i--) {
+            index = Math.floor((i + 1) * Math.random());
+            temp = shuffled[index];
+            shuffled[index] = shuffled[i];
+            shuffled[i] = temp;
+        }
+        return shuffled.slice(0, size);
+    }
+  const subNames = getRandomSubarray(names, 100)
+
+  const schematics = await Promise.all(subNames.map(async (name, i) => {
+    const data = await fetch(name).then(r => r.arrayBuffer())
+    const schem = await Schematic.read(Buffer.from(data), version)
+    return schem
+  }))
+
+  let x = -80
+  let z = -50
+  let maxZ = 0
+  for (const schematic of schematics) { 
+    console.log(schematic.size)
+    await schematic.paste(world, new Vec3(x, 60, z))
+    x+=5 + schematic.size.x
+    maxZ = Math.max(schematic.size.z, maxZ)
+    if (x > 80) {
+        x = -50
+        z+= maxZ + 5
+        maxZ = 0
+    }
+  }
 
   // Create three.js context, add to page
   const renderer = new THREE.WebGLRenderer()

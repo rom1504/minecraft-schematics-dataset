@@ -6,7 +6,8 @@
     "scripts": {
         "prepare": "webpack",
         "start": "webpack serve",
-        "prod-start": "http-server public/"
+        "prod-start": "http-server public/",
+        "build-start": "npm run prepare && npm run prod-start"
     },
     "dependencies": {
         "assert": "^2.0.0",
