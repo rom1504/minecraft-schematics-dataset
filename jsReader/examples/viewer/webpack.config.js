@@ -3,6 +3,9 @@ const path = require('path')
 const CopyPlugin = require('copy-webpack-plugin')
 
 const config = {
+  /* devtool: 'inline-source-map',
+  mode:'development', */
+  mode: 'production',
   entry: path.resolve(__dirname, './index.js'),
   output: {
     path: path.resolve(__dirname, './public'),
@@ -46,8 +49,7 @@ const config = {
     watchOptions: {
       ignored: /node_modules/
     }
-  },
-  mode:'production'
+  }
 }
 
 module.exports = config

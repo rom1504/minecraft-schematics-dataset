@@ -1,15 +1,17 @@
-/* global THREE XMLHttpRequest */
+/* global THREE, fetch */
 const { WorldView, Viewer } = require('prismarine-viewer/viewer')
 const { Vec3 } = require('vec3')
 global.THREE = require('three')
 require('three/examples/js/controls/OrbitControls')
 
 const { Schematic } = require('prismarine-schematic')
-const names = require('./public/names.json')
+const { Buffer } = require('buffer')
 
+async function simpleRead () {
+  return await (await fetch('small.json')).json()
+}
 
-async function main (){
-
+async function main () {
   const version = '1.16.4'
   const viewDistance = 25
   const center = new Vec3(0, 90, 0)
@@ -20,9 +22,9 @@ async function main (){
   const chunkGenerator = (chunkX, chunkZ) => {
     const chunk = new Chunk()
     for (let x = 0; x < 16; x++) {
-        for (let z = 0; z < 16; z++) {
-            chunk.setBlockStateId(new Vec3(x, 59, z), 9)
-        }
+      for (let z = 0; z < 16; z++) {
+        chunk.setBlockStateId(new Vec3(x, 59, z), 9)
+      }
     }
     return chunk
   }
@@ -30,36 +32,25 @@ async function main (){
   const world = new World(chunkGenerator)
   const worldView = new WorldView(world, viewDistance, center)
 
-  function getRandomSubarray(arr, size) {
-        var shuffled = arr.slice(0), i = arr.length, temp, index;
-        while (i--) {
-            index = Math.floor((i + 1) * Math.random());
-            temp = shuffled[index];
-            shuffled[index] = shuffled[i];
-            shuffled[i] = temp;
-        }
-        return shuffled.slice(0, size);
-    }
-  const subNames = getRandomSubarray(names, 100)
-
-  const schematics = await Promise.all(names.map(async (name, i) => {
-    const data = await fetch(name).then(r => r.arrayBuffer())
-    const schem = await Schematic.read(Buffer.from(data), version)
-    return schem
-  }))
+  const newSchemP = []
+  for (const schematic of await simpleRead()) {
+    newSchemP.push(Schematic.read(Buffer.from(schematic.schematicData.data)))
+  }
+  const newSchem = await Promise.all(newSchemP)
+  console.log(newSchem.length)
 
   let x = -200
   let z = -100
   let maxZ = 0
-  for (const schematic of schematics) { 
+  for (const schematic of newSchem) {
     console.log(schematic.size)
     await schematic.paste(world, new Vec3(x, 60, z))
-    x+=5 + schematic.size.x
+    x += 5 + schematic.size.x
     maxZ = Math.max(schematic.size.z, maxZ)
     if (x > 200) {
-        x = -200
-        z+= maxZ + 5
-        maxZ = 0
+      x = -200
+      z += maxZ + 5
+      maxZ = 0
     }
   }
 
