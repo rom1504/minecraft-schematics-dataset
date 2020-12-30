@@ -8,7 +8,7 @@ const { Schematic } = require('prismarine-schematic')
 const { Buffer } = require('buffer')
 
 async function simpleRead () {
-  return await (await fetch('small.json')).json()
+  return await (await fetch('all_small.json')).json()
 }
 
 async function main () {
@@ -32,11 +32,26 @@ async function main () {
   const world = new World(chunkGenerator)
   const worldView = new WorldView(world, viewDistance, center)
 
+  const schems = await simpleRead()
+
+  function getRandomSubarray(arr, size) {
+        var shuffled = arr.slice(0), i = arr.length, temp, index;
+        while (i--) {
+            index = Math.floor((i + 1) * Math.random());
+            temp = shuffled[index];
+            shuffled[index] = shuffled[i];
+            shuffled[i] = temp;
+        }
+        return shuffled.slice(0, size);
+    }
+  const subSchems = getRandomSubarray(schems, 300)
+
   const newSchemP = []
-  for (const schematic of await simpleRead()) {
-    newSchemP.push(Schematic.read(Buffer.from(schematic.schematicData.data)))
+  for (const schematic of subSchems) {
+    newSchemP.push(Schematic.read(Buffer.from(schematic.schematicData.data)).catch(err => null))
   }
-  const newSchem = await Promise.all(newSchemP)
+  console.log(newSchemP)
+  const newSchem = (await Promise.all(newSchemP)).filter(a => a!== null)
   console.log(newSchem.length)
 
   let x = -200

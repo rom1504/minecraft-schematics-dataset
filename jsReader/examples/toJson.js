@@ -4,7 +4,7 @@ const fs = require('fs').promises
 async function main() {
 
     const r = []
-    const reader = await tfrecord.createReader('viewer/public/small.tfrecord')
+    const reader = await tfrecord.createReader('viewer/public/all_small.tfrecord')
     let example
     const enc = new TextDecoder()
     while (example = await reader.readExample()) { // eslint-disable-line
@@ -14,6 +14,6 @@ async function main() {
     }
 
 
-    await fs.writeFile("viewer/public/small.json", JSON.stringify(r))
+    await fs.writeFile("viewer/public/all_small.json", JSON.stringify(r))
 }
 main()

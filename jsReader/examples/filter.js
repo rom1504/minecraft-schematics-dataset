@@ -22,6 +22,7 @@ async function main() {
     let i = 0
     const begin = performance.now()
     const records = []
+    let hundred = performance.now()
     for await (const schematic of read()) {
         //console.log(schematic)
 
@@ -33,29 +34,33 @@ async function main() {
         try {
             let uncompressed = hasGzipHeader(data) ? await gzipPromise(data) : data
             if (uncompressed.length >= 10000000) {
-                console.log('too big, skipped', uncompressed.length / 1000000)
+                // console.log('too big, skipped', uncompressed.length / 1000000)
                 continue
             }
             const parsedNbt = nbt.simplify(await parseNbt(uncompressed))
             //const schem = await Schematic.read(uncompressed)
 
             const id = schematic.url.split("/")[schematic.url.split("/").length-2]
-            console.log(id)
+            // console.log(id)
             if (parsedNbt.Width < 30 && parsedNbt.Length < 30) {
                 records.push({url: schematic.url, schematicData: schematic.schematicData})
             }
         } catch(err) {
-            console.log('failed', err)
+            // console.log('failed', err)
         }
-        console.log(performance.now() - b)
+        // console.log(performance.now() - b)
         //console.log(parsedNbt)
 
         i++
-        if (i==1000) {
+        if (i % 100 === 0) {
+            console.log(i, "processed in", (performance.now() - hundred))
+            hundred = performance.now()
+        }
+        if (i==100000) {
             break
         }
     }
-    await write("viewer/public/small.tfrecord", records)
+    await write("viewer/public/all_all_small.tfrecord", records)
 
     console.log(performance.now() - begin)
 }
