@@ -36,12 +36,12 @@ async function main() {
                 console.log('too big, skipped', uncompressed.length / 1000000)
                 continue
             }
-            // const parsedNbt = nbt.simplify(await parseNbt(uncompressed))
-            const schem = await Schematic.read(uncompressed)
+            const parsedNbt = nbt.simplify(await parseNbt(uncompressed))
+            //const schem = await Schematic.read(uncompressed)
 
             const id = schematic.url.split("/")[schematic.url.split("/").length-2]
             console.log(id)
-            if (schem.size.x < 30 && schem.size.z < 30) {
+            if (parsedNbt.Width < 30 && parsedNbt.Length < 30) {
                 await fs.writeFile("viewer/public/schem/"+id+".schematic", data)
                 names.push("schem/"+id+".schematic")
             }

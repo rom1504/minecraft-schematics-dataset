@@ -11,24 +11,18 @@ const names = require('./public/names.json')
 async function main (){
 
   const version = '1.16.4'
-  const viewDistance = 8
+  const viewDistance = 25
   const center = new Vec3(0, 90, 0)
 
   const World = require('prismarine-world')(version)
   const Chunk = require('prismarine-chunk')(version)
 
-  const generator = (x, y, z) => {
-    if (y < 60) return 1
-    return 0
-  }
   const chunkGenerator = (chunkX, chunkZ) => {
     const chunk = new Chunk()
-    for (let y = 0; y < 256; y++) {
-      for (let x = 0; x < 16; x++) {
+    for (let x = 0; x < 16; x++) {
         for (let z = 0; z < 16; z++) {
-          chunk.setBlockStateId(new Vec3(x, y, z), generator(chunkX * 16 + x, y, chunkZ * 16 + z))
+            chunk.setBlockStateId(new Vec3(x, 59, z), 9)
         }
-      }
     }
     return chunk
   }
@@ -48,22 +42,22 @@ async function main (){
     }
   const subNames = getRandomSubarray(names, 100)
 
-  const schematics = await Promise.all(subNames.map(async (name, i) => {
+  const schematics = await Promise.all(names.map(async (name, i) => {
     const data = await fetch(name).then(r => r.arrayBuffer())
     const schem = await Schematic.read(Buffer.from(data), version)
     return schem
   }))
 
-  let x = -80
-  let z = -50
+  let x = -200
+  let z = -100
   let maxZ = 0
   for (const schematic of schematics) { 
     console.log(schematic.size)
     await schematic.paste(world, new Vec3(x, 60, z))
     x+=5 + schematic.size.x
     maxZ = Math.max(schematic.size.z, maxZ)
-    if (x > 80) {
-        x = -50
+    if (x > 200) {
+        x = -200
         z+= maxZ + 5
         maxZ = 0
     }
