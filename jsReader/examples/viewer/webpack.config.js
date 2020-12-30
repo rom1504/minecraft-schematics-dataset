@@ -47,7 +47,7 @@ const config = {
       ignored: /node_modules/
     }
   },
-  devtool: 'eval-source-map'
+  mode:'production'
 }
 
 module.exports = config
