@@ -1,7 +1,7 @@
 const nbt = require('prismarine-nbt')
 const promisify = require('util').promisify
 const parseNbt = promisify(nbt.parse)
-const read = require('./reader')
+const {read} = require('.')
 
 
 async function main() {
