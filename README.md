@@ -1,7 +1,7 @@
 # minecraft-schematics-dataset
 Minecraft schematics dataset
 
-[<img src="mcDataset.png" alt="viewer" width="300">](https://rom1504.github.io/minecraft-schematics-dataset)
+[<img src="mcDataset2.png" alt="viewer" width="300">](https://rom1504.github.io/minecraft-schematics-dataset)
 
 
 ## Download
