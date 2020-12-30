@@ -3,8 +3,8 @@ const path = require('path')
 const CopyPlugin = require('copy-webpack-plugin')
 
 const config = {
-  /* devtool: 'inline-source-map',
-  mode:'development', */
+  /*devtool: 'inline-source-map',
+  mode:'development',*/
   mode: 'production',
   entry: path.resolve(__dirname, './index.js'),
   output: {

@@ -1,27 +1,22 @@
 const tfrecord = require('tfrecord')
+const fs = require('fs').promises
 
 async function* read () {
   const metadata = require(__dirname+'/../data/schematicsWithFinalUrl.json')
   const indexedMetadata = Object.fromEntries(metadata.map(e => [e.url, e]))
-  const reader = await tfrecord.createReader(__dirname+'/../data/schematics_0.tfrecords')
-  let example
-  const enc = new TextDecoder()
-  while (example = await reader.readExample()) { // eslint-disable-line
-    const url = enc.decode(example.features.feature.url.bytesList.value[0])
-    const schematicData = Buffer.from(example.features.feature.schematicData.bytesList.value[0])
-    const metadata = indexedMetadata[url]
-    yield {schematicData, ...metadata}
-  }
-}
 
-async function* simpleRead () {
-  const reader = await tfrecord.createReader(__dirname+'/../data/schematics_0.tfrecords')
-  let example
-  const enc = new TextDecoder()
-  while (example = await reader.readExample()) { // eslint-disable-line
-    const url = enc.decode(example.features.feature.url.bytesList.value[0])
-    const schematicData = Buffer.from(example.features.feature.schematicData.bytesList.value[0])
-    yield {schematicData, url}
+  const files = (await fs.readdir(__dirname+'/../data')).filter(f => f.includes(".tfrecord")).map(f => __dirname+'/../data/'+f)
+
+  for (let file of files) {
+    const reader = await tfrecord.createReader(file)
+    let example
+    const enc = new TextDecoder()
+    while (example = await reader.readExample()) { // eslint-disable-line
+        const url = enc.decode(example.features.feature.url.bytesList.value[0])
+        const schematicData = Buffer.from(example.features.feature.schematicData.bytesList.value[0])
+        const metadata = indexedMetadata[url]
+        yield {schematicData, ...metadata}
+    }
   }
 }
 
@@ -42,4 +37,4 @@ async function write (filename, examples) {
   await writer.close()
 }
 
-module.exports = {simpleRead,read,write}
+module.exports = {read,write}
