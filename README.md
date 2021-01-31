@@ -3,6 +3,7 @@ Minecraft schematics dataset
 
 [<img src="mcDataset2.png" alt="viewer" width="300">](https://rom1504.github.io/minecraft-schematics-dataset)
 
+Dataset is [there](https://gitlab.com/rom1504/minecraft-schematics-dataset)
 
 ## Download
 bash download.sh
